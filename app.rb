@@ -1,12 +1,13 @@
 require 'sinatra'
+require 'json'
 
 # Security Calculator Web Service
 class SecurityCalculator < Sinatra::Base
   get '/' do
-    'SecurityCalculator is up and running; API available at /api/v1/'
+    'SecurityCalculator is up and running; API available at <a href="/api/v1/">/api/v1</a>'
   end
 
-  get '/api/v1' do
+  get '/api/v1/?' do
     'Services offered include<br>' \
     ' GET /api/v1/hash_murmur?text=[your text]<br>' \
     ' POST /api/v1/random_simple (numeric parameters: max, body)'
