@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'json'
+require_relative 'model/operation'
 
 # Security Calculator Web Service
 class SecurityCalculator < Sinatra::Base
