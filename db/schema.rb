@@ -15,9 +15,9 @@ ActiveRecord::Schema.define(version: 20150416145806) do
 
   create_table "operations", force: :cascade do |t|
     t.string   "operation"
-    t.text     "parameters "
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.text     "parameters"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
