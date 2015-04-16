@@ -18,6 +18,10 @@ class SecurityCalculator < Sinatra::Base
     plaintext = params[:text]
     halt 400 unless plaintext
 
+    op = Operation.new(operation: 'hash_murmur',
+                       parameters: { text: plaintext }.to_json)
+    op.save
+
     { hash: plaintext.hash,
       notes: 'Non-cryptographic hash not for secure use'
     }.to_json
@@ -33,6 +37,11 @@ class SecurityCalculator < Sinatra::Base
         max = req['max']
         seed = req['seed']
       end
+
+      req_params = { max: max, seed: seed }
+      op = Operation.new(operation: 'random_simple',
+                         parameters: req_params.to_json)
+      op.save
 
       seed ||= Random.new_seed
       randomizer = Random.new(seed)
