@@ -1,9 +1,14 @@
 require 'sinatra'
 require 'json'
+require 'config_env'
 require_relative 'model/operation'
 
 # Security Calculator Web Service
 class SecurityCalculator < Sinatra::Base
+  configure :development, :test do
+    ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
+  end
+
   get '/' do
     'SecurityCalculator is up and running; API available at <a href="/api/v1/">/api/v1</a>'
   end

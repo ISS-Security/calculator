@@ -5,10 +5,14 @@ gem 'sinatra'
 gem 'thin'
 gem 'json'
 
+gem 'config_env'
+
 gem 'rake'
 
 gem 'activerecord'
 gem 'sinatra-activerecord'
+
+gem 'rbnacl-libsodium'
 
 group :development do
   gem 'sqlite3'
