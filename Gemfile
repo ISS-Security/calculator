@@ -23,5 +23,8 @@ group :test do
   gem 'minitest'
   gem 'rack'
   gem 'rack-test'
-  gem 'rake'
+end
+
+group :production do
+  gem 'pg'
 end
