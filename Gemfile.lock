@@ -71,6 +71,9 @@ DEPENDENCIES
   activerecord
   config_env
   json
+  minitest
+  rack
+  rack-test
   rake
   rbnacl-libsodium
   sinatra
