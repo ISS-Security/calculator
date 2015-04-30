@@ -2,9 +2,12 @@ require 'sinatra'
 require 'json'
 require 'config_env'
 require_relative 'model/operation'
+require_relative 'helpers/securecalc_helper'
 
 # Security Calculator Web Service
 class SecurityCalculator < Sinatra::Base
+  include SecureCalcHelper
+
   configure :development, :test do
     ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
   end
@@ -33,31 +36,6 @@ class SecurityCalculator < Sinatra::Base
   end
 
   post '/api/v1/random_simple' do
-    max = nil
-    seed = nil
-    request_json = request.body.read
-    begin
-      unless request_json.empty?
-        req = JSON.parse(request_json)
-        max = req['max']
-        seed = req['seed']
-      end
-
-      req_params = { max: max, seed: seed }
-      op = Operation.new(operation: 'random_simple',
-                         parameters: req_params.to_json)
-      op.save
-
-      seed ||= Random.new_seed
-      randomizer = Random.new(seed)
-      result = max ? randomizer.rand(max) : randomizer.rand
-
-      { random: result,
-        seed: seed,
-        notes: 'Simple PRNG not for secure use'
-      }.to_json
-    rescue
-      halt 400, 'Check parameters max and seed are numbers (integer or float)'
-    end
+    random_simple.to_json
   end
 end
