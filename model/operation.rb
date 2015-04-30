@@ -5,7 +5,7 @@ require 'base64'
 
 class Operation < ActiveRecord::Base
   def key
-    ENV['DB_KEY'].dup.force_encoding Encoding::BINARY
+    Base64.urlsafe_decode64(ENV['DB_KEY'])
   end
 
   def parameters=(params_str)
