@@ -1,0 +1,12 @@
+%h2 Random number
+- if @random_results
+  %p
+    = "Your random number: #{@random_results[:random]}"
+  %p
+    = "(note: #{@random_results[:notes]})" if @random_results[:notes]
+%form{:action => '/random_simple', :method => 'post', :id => 'user-form'}
+  %label{:for => 'max_input'} Max
+  %input{:type => 'text', :name => 'max', :id => 'max_input', :placeholder => '(enter max number)'}
+  %label{:for => 'seed_input'} Seed
+  %input{:type => 'text', :name => 'seed', :id => 'seed_input', :placeholder => '(enter seed number)'}
+  %input{:type => 'submit', :id => 'home-form-submit', :class => 'submit', :value => 'submit'}

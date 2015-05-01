@@ -21,6 +21,8 @@ GEM
     daemons (1.2.2)
     eventmachine (1.0.7)
     ffi (1.9.8)
+    haml (4.0.6)
+      tilt
     i18n (0.7.0)
     json (1.8.2)
     minitest (5.6.0)
@@ -43,6 +45,8 @@ GEM
       rack (>= 1.0)
       rack-test (~> 0.6.2)
       ripl (>= 0.7.0)
+    shotgun (0.9)
+      rack (>= 1.0)
     sinatra (1.4.6)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -71,6 +75,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   config_env
+  haml
   json
   minitest
   pg
@@ -78,6 +83,7 @@ DEPENDENCIES
   rack-test
   rake
   rbnacl-libsodium
+  shotgun
   sinatra
   sinatra-activerecord
   sqlite3

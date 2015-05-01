@@ -12,10 +12,6 @@ class SecurityCalculator < Sinatra::Base
     ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
   end
 
-  get '/' do
-    'SecurityCalculator is up and running; API available at <a href="/api/v1/">/api/v1</a>'
-  end
-
   get '/api/v1/?' do
     'Services offered include<br>' \
     ' GET /api/v1/hash_murmur?text=[your text]<br>' \
@@ -23,6 +19,7 @@ class SecurityCalculator < Sinatra::Base
   end
 
   get '/api/v1/hash_murmur' do
+    content_type :json
     plaintext = params[:text]
     halt 400 unless plaintext
 
@@ -36,6 +33,36 @@ class SecurityCalculator < Sinatra::Base
   end
 
   post '/api/v1/random_simple' do
-    random_simple.to_json
+    content_type :json
+    max = seed = nil
+    request_json = request.body.read
+    unless request_json.empty?
+      req = JSON.parse(request_json)
+      max = req['max']
+      seed = req['seed']
+    end
+
+    random_simple(max, seed).to_json
+  end
+
+  get '/' do
+    haml :index
+  end
+
+  get '/random_simple' do
+    haml :random_simple
+  end
+
+  post '/random_simple' do
+    begin
+      max = params[:max].to_i unless params[:max].empty?
+      seed = params[:seed].to_i unless params[:seed].empty?
+      @random_results = random_simple(max, seed)
+      puts @random_results.inspect
+      haml :random_simple
+    rescue => e
+      puts e
+      halt 400, 'Check parameters max and seed are numbers (integer or float)'
+    end
   end
 end
