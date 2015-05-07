@@ -2,6 +2,7 @@ require 'sinatra'
 require 'json'
 require 'config_env'
 require_relative 'model/operation'
+require_relative 'model/user'
 require_relative 'helpers/securecalc_helper'
 
 # Security Calculator Web Service

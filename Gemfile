@@ -12,6 +12,7 @@ gem 'rake'
 
 gem 'activerecord'
 gem 'sinatra-activerecord'
+gem 'protected_attributes'
 
 gem 'rbnacl-libsodium'
 
