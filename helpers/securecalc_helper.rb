@@ -12,4 +12,9 @@ module SecureCalcHelper
     { random: result, seed: seed,
       notes: 'Simple PRNG not for secure use' }
   end
+
+  def login_user(user)
+    session[:user_id] = user.id
+    redirect '/'
+  end
 end

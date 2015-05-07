@@ -8,9 +8,20 @@ require_relative 'helpers/securecalc_helper'
 # Security Calculator Web Service
 class SecurityCalculator < Sinatra::Base
   include SecureCalcHelper
+  use Rack::Session::Cookie
+  enable :logging
 
   configure :development, :test do
     ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
+  end
+
+  configure :development do
+    require 'hirb'
+    Hirb.enable
+  end
+
+  before do
+    @current_user = session[:user_id] ? User.find_by_id(session[:user_id]) : nil
   end
 
   get '/api/v1/?' do
@@ -48,6 +59,46 @@ class SecurityCalculator < Sinatra::Base
 
   get '/' do
     haml :index
+  end
+
+  get '/register' do
+    haml :register
+  end
+
+  post '/register' do
+    logger.info('REGISTER')
+    username = params[:username]
+    email = params[:email]
+    password = params[:password]
+    password_confirm = params[:password_confirm]
+    begin
+      if password == password_confirm
+        new_user = User.new(username: username, email: email)
+        new_user.password = password
+        new_user.save! ? login_user(new_user) : fail('Could not create new user')
+      else
+        fail 'Passwords do not match'
+      end
+    rescue => e
+      logger.error(e)
+      redirect '/register'
+    end
+  end
+
+  get '/login' do
+    haml :login
+  end
+
+  post '/login' do
+    username = params[:username]
+    password = params[:password]
+    user = User.authenticate!(username, password)
+    user ? login_user(user) : redirect('/login')
+  end
+
+  get '/logout' do
+    session[:user_id] = nil
+    redirect '/'
   end
 
   get '/random_simple' do

@@ -4,4 +4,13 @@
     %title Security Calculator
   %body
     %h1 Welcome to Security Calculator
+    - if @current_user
+      = "welcome #{@current_user.username} | "
+      %a{href: '/logout'}
+        logout
+    - else
+      %a{href: '/login'}
+        = "login | "
+      %a{href: '/register'}
+        = "register"
     = yield

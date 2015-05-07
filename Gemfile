@@ -20,6 +20,7 @@ group :development do
   gem 'sqlite3'
   gem 'shotgun'
   gem 'tux'
+  gem 'hirb'
 end
 
 group :test do
