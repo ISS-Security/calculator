@@ -2,6 +2,7 @@
 %html
   %head
     %title Security Calculator
+    %link{rel:'stylesheet', href:'/custom.css'}
   %body
     %h1 Welcome to Security Calculator
     - if @current_user
@@ -13,4 +14,5 @@
         = "login | "
       %a{href: '/register'}
         = "register"
+    = haml :flash_bar
     = yield

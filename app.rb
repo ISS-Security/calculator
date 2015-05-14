@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'rack-flash'
 require 'json'
 require 'config_env'
 require_relative 'model/operation'
@@ -21,6 +22,7 @@ class SecurityCalculator < Sinatra::Base
 
   configure do
     use Rack::Session::Cookie, secret: ENV['MSG_KEY']
+    use Rack::Flash, :sweep => true
     # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
   end
 
@@ -70,7 +72,6 @@ class SecurityCalculator < Sinatra::Base
   end
 
   post '/register' do
-    logger.info('REGISTER')
     username = params[:username]
     email = params[:email]
     password = params[:password]
@@ -81,10 +82,13 @@ class SecurityCalculator < Sinatra::Base
         new_user.password = password
         new_user.save! ? login_user(new_user) : fail('Could not create new user')
       else
-        fail 'Passwords do not match'
+        flash[:error] = "Passwords do not match - please try again"
+        redirect '/register'
+        # fail 'Passwords do not match'
       end
     rescue => e
       logger.error(e)
+      flash[:error] = "Contact administrators: an error occured during registration"
       redirect '/register'
     end
   end
@@ -102,6 +106,7 @@ class SecurityCalculator < Sinatra::Base
 
   get '/logout' do
     session[:auth_token] = nil
+    flash[:notice] = "You have logged out"
     redirect '/'
   end
 

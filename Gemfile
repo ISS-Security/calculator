@@ -5,6 +5,7 @@ gem 'sinatra'
 gem 'thin'
 gem 'json'
 gem 'haml'
+gem 'rack-flash3'
 
 gem 'config_env'
 
