@@ -8,7 +8,6 @@ gem 'haml'
 gem 'rack-flash3'
 
 gem 'config_env'
-
 gem 'rake'
 
 gem 'activerecord'
@@ -18,8 +17,13 @@ gem 'protected_attributes'
 gem 'rbnacl-libsodium'
 gem 'jwt'
 
-group :development do
+gem 'pony'
+
+group :development, :test do
   gem 'sqlite3'
+end
+
+group :development do
   gem 'shotgun'
   gem 'tux'
   gem 'hirb'
