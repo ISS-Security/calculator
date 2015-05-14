@@ -21,6 +21,7 @@ class SecurityCalculator < Sinatra::Base
 
   configure do
     use Rack::Session::Cookie, secret: ENV['MSG_KEY']
+    # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
   end
 
   before do
