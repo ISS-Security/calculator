@@ -8,7 +8,6 @@ require_relative 'helpers/securecalc_helper'
 # Security Calculator Web Service
 class SecurityCalculator < Sinatra::Base
   include SecureCalcHelper
-  use Rack::Session::Cookie
   enable :logging
 
   configure :development, :test do
@@ -20,8 +19,12 @@ class SecurityCalculator < Sinatra::Base
     Hirb.enable
   end
 
+  configure do
+    use Rack::Session::Cookie, secret: ENV['MSG_KEY']
+  end
+
   before do
-    @current_user = session[:user_id] ? User.find_by_id(session[:user_id]) : nil
+    @current_user = find_user_by_token(session[:auth_token])
   end
 
   get '/api/v1/?' do
@@ -97,7 +100,7 @@ class SecurityCalculator < Sinatra::Base
   end
 
   get '/logout' do
-    session[:user_id] = nil
+    session[:auth_token] = nil
     redirect '/'
   end
 

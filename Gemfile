@@ -15,6 +15,7 @@ gem 'sinatra-activerecord'
 gem 'protected_attributes'
 
 gem 'rbnacl-libsodium'
+gem 'jwt'
 
 group :development do
   gem 'sqlite3'

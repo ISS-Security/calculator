@@ -1,6 +1,12 @@
 # Copy this file to [app]/config/config_eng.rb
 # Replace [*] with credentials/keys/etc.
 
-config_env do
-  set :DB_KEY, "[database encryption key in base64 url safe encoding]"
+config_env :development, :test do
+  set 'DB_KEY', "[database encryption key in base64 url safe encoding]"
+  set 'MSG_KEY', "[database encryption key in base64 url safe encoding]"
+end
+
+config_env :production do
+  set 'DB_KEY', "[database encryption key in base64 url safe encoding]"
+  set 'MSG_KEY', "[database encryption key in base64 url safe encoding]"
 end
