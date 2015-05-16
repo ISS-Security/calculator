@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
   validates :email, presence: true, format: /@/
   validates :hashed_password, presence: true
 
-  attr_accessible :username, :email
+  attr_accessible :username, :email, :password
 
   def password=(new_password)
     salt = RbNaCl::Random.random_bytes(RbNaCl::PasswordHash::SCrypt::SALTBYTES)

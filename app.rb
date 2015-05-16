@@ -1,7 +1,12 @@
 require 'sinatra'
 require 'rack-flash'
 require 'json'
-require 'config_env'
+
+configure :development, :test do
+  require 'config_env'
+  ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
+end
+
 require_relative 'model/operation'
 require_relative 'model/user'
 require_relative 'helpers/securecalc_helper'
@@ -11,10 +16,6 @@ class SecurityCalculator < Sinatra::Base
   include SecureCalcHelper
   enable :logging
 
-  configure :development, :test do
-    ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
-  end
-
   configure :development do
     require 'hirb'
     Hirb.enable
@@ -22,8 +23,8 @@ class SecurityCalculator < Sinatra::Base
 
   configure do
     use Rack::Session::Cookie, secret: ENV['MSG_KEY']
-    use Rack::Flash, :sweep => true
     # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
+    use Rack::Flash, :sweep => true
   end
 
   before do
@@ -72,25 +73,21 @@ class SecurityCalculator < Sinatra::Base
   end
 
   post '/register' do
-    username = params[:username]
-    email = params[:email]
-    password = params[:password]
-    password_confirm = params[:password_confirm]
-    begin
-      if password == password_confirm
-        new_user = User.new(username: username, email: email)
-        new_user.password = password
-        new_user.save! ? login_user(new_user) : fail('Could not create new user')
-      else
-        flash[:error] = "Passwords do not match - please try again"
-        redirect '/register'
-        # fail 'Passwords do not match'
-      end
-    rescue => e
-      logger.error(e)
-      flash[:error] = "Contact administrators: an error occured during registration"
+    registration =
+      Registration.new(params[:username], params[:email], params[:password])
+    unless (registration.complete?)
+      flash[:error] = "Please fill in all the fields"
       redirect '/register'
+      halt
     end
+
+    unless (params[:password] == params[:password_confirm])
+      flash[:error] = "Passwords do not match - please try again"
+      redirect '/register'
+      halt
+    end
+
+    email_registration_verification(registration)
   end
 
   get '/login' do

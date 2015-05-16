@@ -1,3 +1,5 @@
+require 'pony'
+
 configure :development do
   set :database, 'sqlite3:db/dev.db'
   set :show_exceptions, true
@@ -19,17 +21,19 @@ configure :production do
     database: db.path[1..-1],
     encoding: 'utf8'
   )
+end
 
+configure do
   Pony.options = {
-  :via => :smtp,
-  :via_options => {
-    :address => 'smtp.sendgrid.net',
-    :port => '587',
-    :domain => 'heroku.com',
-    :user_name => ENV['SENDGRID_USERNAME'],
-    :password => ENV['SENDGRID_PASSWORD'],
-    :authentication => :plain,
-    :enable_starttls_auto => true
+    via: :smtp,
+    via_options: {
+      address: 'smtp.sendgrid.net',
+      port: '587',
+      domain: ENV['SENDGRID_DOMAIN'],
+      user_name: ENV['SENDGRID_USERNAME'],
+      password: ENV['SENDGRID_PASSWORD'],
+      authentication: :plain,
+      enable_starttls_auto: true
     }
   }
 end
