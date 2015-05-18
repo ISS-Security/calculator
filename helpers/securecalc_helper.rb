@@ -6,10 +6,10 @@ module SecureCalcHelper
   class Registration
     attr_accessor :username, :email, :password
 
-    def initialize(username, email, password)
-      @username = username
-      @email = email
-      @password = password
+    def initialize(user_hash)
+      @username = user_hash['username'] || user_hash[:username]
+      @email = user_hash['email'] || user_hash[:email]
+      @password = user_hash['password'] || user_hash[:password]
     end
 
     def complete?
@@ -37,16 +37,10 @@ module SecureCalcHelper
     payload = {username: registration.username, email: registration.email,
                password: registration.password}
     token = JWT.encode payload, ENV['MSG_KEY'], 'HS256'
-    verification = Base64.urlsafe_encode64(encrypt_message(token).to_s)
+    verification = encrypt_message(token)
     Pony.mail(to: registration.email,
               subject: "Your SecureCalculator Account is Ready",
               html_body: registration_email(verification))
-    flash[:notice] = "A verification link has been sent to you. Please check your email!"
-    redirect '/'
-  rescue => e
-    logger.error "FAIL EMAIL: #{e}"
-    flash[:error] = "Could not send registration verification: check email address"
-    redirect '/register'
   end
 
   def registration_email(token)
@@ -60,29 +54,39 @@ module SecureCalcHelper
     key = Base64.urlsafe_decode64(ENV['MSG_KEY'])
     secret_box = RbNaCl::SecretBox.new(key)
     nonce = RbNaCl::Random.random_bytes(secret_box.nonce_bytes)
-
-    key_s = Base64.urlsafe_encode64(key)
     nonce_s = Base64.urlsafe_encode64(nonce)
-    message_enc = secret_box.encrypt(nonce, message.to_json)
+    message_enc = secret_box.encrypt(nonce, message.to_s)
     message_enc_s = Base64.urlsafe_encode64(message_enc)
-    {'message'=>message_enc_s, 'nonce'=>nonce_s}
+    Base64.urlsafe_encode64({'message'=>message_enc_s, 'nonce'=>nonce_s}.to_json)
   end
 
-  def register_account(registration)
-    new_user = User.new(username: username, email: email)
-    new_user.password = password
-    new_user.save! ? login_user(new_user) : fail('Could not create new user')
-  rescue => e
-    logger.error(e)
-    flash[:error] = "Could not create new user in database: please check input"
-    redirect '/register'
+  def decrypt_message(secret_message)
+    key = Base64.urlsafe_decode64(ENV['MSG_KEY'])
+    secret_box = RbNaCl::SecretBox.new(key)
+    message_h = JSON.parse(Base64.urlsafe_decode64(secret_message))
+    message_enc = Base64.urlsafe_decode64(message_h['message'])
+    nonce = Base64.urlsafe_decode64(message_h['nonce'])
+    message = secret_box.decrypt(nonce, message_enc)
+  rescue
+    raise "INVALID ENCRYPTED MESSAGE"
+  end
+
+  def create_account_with_registration(registration)
+    new_user = User.new(username: registration.username, email: registration.email, password: registration.password)
+    new_user.save ? login_user(new_user) : fail('Could not create new user')
+  end
+
+  def create_user_with_encrypted_token(token_enc)
+    token = decrypt_message(token_enc)
+    payload = (JWT.decode token, ENV['MSG_KEY']).first
+    reg = Registration.new(payload)
+    create_account_with_registration(reg)
   end
 
   def login_user(user)
     payload = {user_id: user.id}
     token = JWT.encode payload, ENV['MSG_KEY'], 'HS256'
     session[:auth_token] = token
-    redirect '/'
   end
 
   def find_user_by_token(token)

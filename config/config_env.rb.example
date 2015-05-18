@@ -10,3 +10,9 @@ config_env :production do
   set 'DB_KEY', "[database encryption key in base64 url safe encoding]"
   set 'MSG_KEY', "[database encryption key in base64 url safe encoding]"
 end
+
+config_env do
+  set 'SENDGRID_DOMAIN', "[domain setup for Sendgrid service]"
+  set 'SENDGRID_USERNAME', "[username setup for Sendgrid service]"
+  set 'SENDGRID_PASSWORD', "[password setup for Sendgrid service]"
+end

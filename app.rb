@@ -69,25 +69,36 @@ class SecurityCalculator < Sinatra::Base
   end
 
   get '/register' do
-    haml :register
+    if token = params[:token]
+      begin
+        create_user_with_encrypted_token(token)
+        flash[:notice] = "Welcome! Your account has been successfully created."
+      rescue
+        flash[:error] = "Your account could not be created. Your link is either expired or invalid."
+      end
+      redirect '/'
+    else
+      haml(:register)
+    end
   end
 
   post '/register' do
-    registration =
-      Registration.new(params[:username], params[:email], params[:password])
-    unless (registration.complete?)
-      flash[:error] = "Please fill in all the fields"
-      redirect '/register'
-      halt
-    end
+    registration = Registration.new(params)
 
-    unless (params[:password] == params[:password_confirm])
-      flash[:error] = "Passwords do not match - please try again"
+    if (registration.complete?) && (params[:password] == params[:password_confirm])
+      begin
+        email_registration_verification(registration)
+        flash[:notice] = "A verification link has been sent to you. Please check your email!"
+        redirect '/'
+      rescue => e
+        logger.error "FAIL EMAIL: #{e}"
+        flash[:error] = "Could not send registration verification: check email address"
+        redirect '/register'
+      end
+    else
+      flash[:error] = "Please fill in all the fields and make sure passwords match"
       redirect '/register'
-      halt
     end
-
-    email_registration_verification(registration)
   end
 
   get '/login' do
@@ -98,7 +109,13 @@ class SecurityCalculator < Sinatra::Base
     username = params[:username]
     password = params[:password]
     user = User.authenticate!(username, password)
-    user ? login_user(user) : redirect('/login')
+    if user
+      login_user(user)
+      redirect '/'
+    else
+      flash[:error] = "We could not find your account with those credentials"
+      redirect '/login'
+    end
   end
 
   get '/logout' do

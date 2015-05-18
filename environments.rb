@@ -25,6 +25,7 @@ end
 
 configure do
   Pony.options = {
+    from: "noreply@#{ENV['SENDGRID_DOMAIN']}",
     via: :smtp,
     via_options: {
       address: 'smtp.sendgrid.net',
