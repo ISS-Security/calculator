@@ -6,6 +6,7 @@ gem 'thin'
 gem 'json'
 gem 'haml'
 gem 'rack-flash3'
+gem 'rack-ssl-enforcer'
 
 gem 'config_env'
 gem 'rake'

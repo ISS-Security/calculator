@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'rack/ssl-enforcer'
 require 'rack-flash'
 require 'json'
 
@@ -21,8 +22,13 @@ class SecurityCalculator < Sinatra::Base
     Hirb.enable
   end
 
+  configure :production do
+    use Rack::SslEnforcer
+    set :session_secret, ENV['MSG_KEY']
+  end
+
   configure do
-    use Rack::Session::Cookie, secret: ENV['MSG_KEY']
+    use Rack::Session::Cookie, secret: settings.session_secret
     # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
     use Rack::Flash, :sweep => true
   end
