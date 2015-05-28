@@ -18,6 +18,7 @@ gem 'protected_attributes'
 gem 'rbnacl-libsodium'
 gem 'jwt'
 
+gem 'httparty'
 gem 'pony'
 
 group :development, :test do

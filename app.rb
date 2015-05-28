@@ -2,6 +2,7 @@ require 'sinatra'
 require 'rack/ssl-enforcer'
 require 'rack-flash'
 require 'json'
+require 'httparty'
 
 configure :development, :test do
   require 'config_env'
@@ -33,41 +34,10 @@ class SecurityCalculator < Sinatra::Base
     use Rack::Flash, :sweep => true
   end
 
+  API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
+
   before do
     @current_user = find_user_by_token(session[:auth_token])
-  end
-
-  get '/api/v1/?' do
-    'Services offered include<br>' \
-    ' GET /api/v1/hash_murmur?text=[your text]<br>' \
-    ' POST /api/v1/random_simple (numeric parameters: max, body)'
-  end
-
-  get '/api/v1/hash_murmur' do
-    content_type :json
-    plaintext = params[:text]
-    halt 400 unless plaintext
-
-    op = Operation.new(operation: 'hash_murmur',
-                       parameters: { text: plaintext }.to_json)
-    op.save
-
-    { hash: plaintext.hash,
-      notes: 'Non-cryptographic hash not for secure use'
-    }.to_json
-  end
-
-  post '/api/v1/random_simple' do
-    content_type :json
-    max = seed = nil
-    request_json = request.body.read
-    unless request_json.empty?
-      req = JSON.parse(request_json)
-      max = req['max']
-      seed = req['seed']
-    end
-
-    random_simple(max, seed).to_json
   end
 
   get '/' do
@@ -138,7 +108,9 @@ class SecurityCalculator < Sinatra::Base
     begin
       max = params[:max].to_i unless params[:max].empty?
       seed = params[:seed].to_i unless params[:seed].empty?
-      @random_results = random_simple(max, seed)
+      @random_results = HTTParty.post API_URL+'random_simple',
+                             body: {max: max, seed: seed}.to_json
+      # @random_results = random_simple(max, seed)
       puts @random_results.inspect
       haml :random_simple
     rescue => e
