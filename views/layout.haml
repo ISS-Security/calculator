@@ -5,13 +5,17 @@
     %link{rel:'stylesheet', href:'/custom.css'}
   %body
     %h1 Welcome to Security Calculator
+    %a{href: '/'}
+      HOME
+    = " | "
     - if @current_user
       = "welcome #{@current_user.username} | "
       %a{href: '/logout'}
         logout
     - else
       %a{href: '/login'}
-        = "login | "
+        = "login"
+      = " | "
       %a{href: '/register'}
         = "register"
     = haml :flash_bar

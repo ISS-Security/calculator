@@ -30,6 +30,18 @@ class SecurityCalculator < Sinatra::Base
     Hirb.enable
   end
 
+  def is_user?
+    @current_user != nil
+  end
+
+  register do
+    def auth (type)
+      condition do
+        redirect "/login" unless send("is_#{type}?")
+      end
+    end
+  end
+
   before do
     @current_user = find_user_by_token(session[:auth_token])
   end
@@ -94,7 +106,7 @@ class SecurityCalculator < Sinatra::Base
     redirect '/'
   end
 
-  get '/random_simple' do
+  get '/random_simple', :auth => :user do
     haml :random_simple
   end
 
