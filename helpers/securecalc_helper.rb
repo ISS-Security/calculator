@@ -3,8 +3,8 @@ require 'jwt'
 require 'pony'
 
 module SecureCalcHelper
-  # API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
-  API_URL = 'http://127.0.0.1:9393/api/v1/'
+  API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
+  # API_URL = 'http://127.0.0.1:9393/api/v1/'
 
   class Registration
     attr_accessor :username, :email, :password
