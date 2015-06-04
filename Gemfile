@@ -14,6 +14,8 @@ gem 'rake'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'protected_attributes'
+gem 'tux'
+gem 'hirb'
 
 gem 'rbnacl-libsodium'
 gem 'jwt'
@@ -27,8 +29,6 @@ end
 
 group :development do
   gem 'shotgun'
-  gem 'tux'
-  gem 'hirb'
 end
 
 group :test do

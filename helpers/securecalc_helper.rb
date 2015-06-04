@@ -3,6 +3,8 @@ require 'jwt'
 require 'pony'
 
 module SecureCalcHelper
+  API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
+
   class Registration
     attr_accessor :username, :email, :password
 
@@ -17,6 +19,16 @@ module SecureCalcHelper
       (email && email.length > 0) &&
       (password && password.length > 0)
     end
+  end
+
+  def api_random_simple(max, seed)
+    jwt_payload = {'client' => 'securecalc'}
+    jwt_key = OpenSSL::PKey::RSA.new(ENV['RSA_PRIVATE_KEY'])
+    jwt = JWT.encode jwt_payload, jwt_key, 'RS256'
+    url = API_URL+'random_simple'
+    body_json = {max: max, seed: seed}.to_json
+    header = {authorization: 'Bearer ' + jwt}
+    HTTParty.post url, body: body_json, header: header
   end
 
   def email_registration_verification(registration)

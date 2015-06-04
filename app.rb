@@ -9,7 +9,6 @@ configure :development, :test do
   ConfigEnv.path_to_config("#{__dir__}/config/config_env.rb")
 end
 
-require_relative 'model/operation'
 require_relative 'model/user'
 require_relative 'helpers/securecalc_helper'
 
@@ -33,8 +32,6 @@ class SecurityCalculator < Sinatra::Base
     # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
     use Rack::Flash, :sweep => true
   end
-
-  API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
 
   before do
     @current_user = find_user_by_token(session[:auth_token])
@@ -108,10 +105,7 @@ class SecurityCalculator < Sinatra::Base
     begin
       max = params[:max].to_i unless params[:max].empty?
       seed = params[:seed].to_i unless params[:seed].empty?
-      @random_results = HTTParty.post API_URL+'random_simple',
-                             body: {max: max, seed: seed}.to_json
-      # @random_results = random_simple(max, seed)
-      puts @random_results.inspect
+      @random_results = api_random_simple(max, seed)
       haml :random_simple
     rescue => e
       puts e
