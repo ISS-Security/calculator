@@ -103,6 +103,7 @@ class SecurityCalculator < Sinatra::Base
       max = params[:max].to_i unless params[:max].empty?
       seed = params[:seed].to_i unless params[:seed].empty?
       @random_results = api_random_simple(max, seed)
+      puts "RANDOM_RESULTS: #{@random_results}"
       haml :random_simple
     rescue => e
       puts e
