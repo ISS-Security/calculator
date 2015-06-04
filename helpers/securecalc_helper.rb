@@ -3,8 +3,8 @@ require 'jwt'
 require 'pony'
 
 module SecureCalcHelper
-  API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
-  # API_URL = 'http://127.0.0.1:9393/api/v1/'
+  # API_URL = 'https://securecalc-api.herokuapp.com/api/v1/'
+  API_URL = 'http://127.0.0.1:9393/api/v1/'
 
   class Registration
     attr_accessor :username, :email, :password
@@ -23,7 +23,8 @@ module SecureCalcHelper
   end
 
   def api_random_simple(max, seed)
-    jwt_payload = {'iss' => 'https://securecalc.herokuapp.com'}
+    jwt_payload = {'iss' => 'https://securecalc.herokuapp.com',
+                   'sub' => @current_user.id}
     jwt_key = OpenSSL::PKey::RSA.new(ENV['UI_PRIVATE_KEY'])
     jwt = JWT.encode jwt_payload, jwt_key, 'RS256'
     url = API_URL+'random_simple'

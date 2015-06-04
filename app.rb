@@ -24,20 +24,19 @@ class SecurityCalculator < Sinatra::Base
   end
 
   configure do
-    use Rack::Session::Cookie, secret: settings.session_secret
+    use Rack::Session::Cookie, secret: ENV['MSG_KEY']
     # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
     use Rack::Flash, :sweep => true
     Hirb.enable
   end
 
-  def is_user?
-    @current_user != nil
-  end
-
   register do
-    def auth (type)
+    def auth(*types)
       condition do
-        redirect "/login" unless send("is_#{type}?")
+        if (types.include? :user) && !@current_user
+          flash[:error] = "You must be logged in for that page"
+          redirect "/login"
+        end
       end
     end
   end
@@ -106,7 +105,7 @@ class SecurityCalculator < Sinatra::Base
     redirect '/'
   end
 
-  get '/random_simple', :auth => :user do
+  get '/random_simple', :auth => [:user] do
     haml :random_simple
   end
 
