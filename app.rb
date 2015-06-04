@@ -105,6 +105,16 @@ class SecurityCalculator < Sinatra::Base
     redirect '/'
   end
 
+  get '/user/:username', :auth => [:user] do
+    username = params[:username]
+    unless username == @current_user.username
+      flash[:error] = "You may only look at your own profile"
+      redirect '/'
+    end
+
+    haml :profile
+  end
+
   get '/random_simple', :auth => [:user] do
     haml :random_simple
   end

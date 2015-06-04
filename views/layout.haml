@@ -10,6 +10,9 @@
     = " | "
     - if @current_user
       = "welcome #{@current_user.username} | "
+      %a{href: "/user/#{@current_user.username}"}
+        profile
+      = " | "
       %a{href: '/logout'}
         logout
     - else

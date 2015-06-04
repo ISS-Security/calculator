@@ -22,14 +22,17 @@ module SecureCalcHelper
     end
   end
 
-  def api_random_simple(max, seed)
+  def user_jwt
     jwt_payload = {'iss' => 'https://securecalc.herokuapp.com',
                    'sub' => @current_user.id}
     jwt_key = OpenSSL::PKey::RSA.new(ENV['UI_PRIVATE_KEY'])
-    jwt = JWT.encode jwt_payload, jwt_key, 'RS256'
+    JWT.encode jwt_payload, jwt_key, 'RS256'
+  end
+
+  def api_random_simple(max, seed)
     url = API_URL+'random_simple'
     body_json = {max: max, seed: seed}.to_json
-    headers = {'authorization' => ('Bearer ' + jwt)}
+    headers = {'authorization' => ('Bearer ' + user_jwt)}
     HTTParty.post url, body: body_json, headers: headers
   end
 
