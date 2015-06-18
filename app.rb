@@ -4,6 +4,9 @@ require 'rack-flash'
 require 'json'
 require 'httparty'
 require 'hirb'
+require 'dalli'
+require 'active_support'
+require 'active_support/core_ext'
 
 configure :development, :test do
   require 'config_env'
@@ -28,6 +31,13 @@ class SecurityCalculator < Sinatra::Base
     # use Rack::Session::Pool   # do not use `shotgun` with pooled sessions
     use Rack::Flash, :sweep => true
     Hirb.enable
+
+    set :ops_cache, Dalli::Client.new((ENV["MEMCACHIER_SERVERS"] || "").split(","),
+      {:username => ENV["MEMCACHIER_USERNAME"],
+        :password => ENV["MEMCACHIER_PASSWORD"],
+        :socket_timeout => 1.5,
+        :socket_failure_delay => 0.2
+        })
   end
 
   register do
@@ -46,6 +56,12 @@ class SecurityCalculator < Sinatra::Base
   end
 
   get '/' do
+    @op_index = if @current_user
+      JSON.parse( settings.ops_cache.fetch(@current_user.id) { api_operation_index.to_json } )
+    else
+      nil
+    end
+    logger.info "@OP_INDEX: #{@op_index}"
     haml :index
   end
 

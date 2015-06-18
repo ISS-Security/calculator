@@ -23,6 +23,9 @@ gem 'jwt'
 gem 'httparty'
 gem 'pony'
 
+gem 'dalli'
+gem 'activesupport'
+
 group :development, :test do
   gem 'sqlite3'
 end

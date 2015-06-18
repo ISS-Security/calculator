@@ -5,3 +5,9 @@
     %li
       %a{href: '/random_simple'}
         Random Simple
+  - if (@op_index)
+    %h3 Recent Operations:
+    %ul
+      -@op_index['operations'].each do |op|
+        %li
+          ="#{op['name']} : #{op['date']}"
