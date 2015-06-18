@@ -86,10 +86,20 @@ module SecureCalcHelper
     create_account_with_registration(reg)
   end
 
+  def create_gh_user(username, email, token)
+    reg = Registration.new({'username' => username, 'email' => email,
+                            'password' => token})
+    create_account_with_registration(reg)
+  end
+
   def login_user(user)
     payload = {user_id: user.id}
     token = JWT.encode payload, ENV['MSG_KEY'], 'HS256'
     session[:auth_token] = token
+  end
+
+  def find_user_by_username(username)
+    User.find_by_username(username)
   end
 
   def find_user_by_token(token)
