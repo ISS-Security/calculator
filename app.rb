@@ -61,7 +61,6 @@ class SecurityCalculator < Sinatra::Base
     else
       nil
     end
-    logger.info "@OP_INDEX: #{@op_index}"
     haml :index
   end
 

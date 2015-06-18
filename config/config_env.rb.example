@@ -4,15 +4,33 @@
 config_env :development, :test do
   set 'DB_KEY', "[database encryption key in base64 url safe encoding]"
   set 'MSG_KEY', "[database encryption key in base64 url safe encoding]"
+  set 'GH_CLIENT_NAME', 'Secure Calculator [development]'
+  set 'GH_CLIENT_ID', '[Client ID]'
+  set 'GH_CLIENT_SECRET', '[Client Secret]'
+
+  set 'MEMCACHIER_SERVERS', 'Server Name'
+  set 'MEMCACHIER_USERNAME', 'username'
+  set 'MEMCACHIER_PASSWORD', 'password'
 end
 
 config_env :production do
   set 'DB_KEY', "[database encryption key in base64 url safe encoding]"
   set 'MSG_KEY', "[database encryption key in base64 url safe encoding]"
+  set 'GH_CLIENT_NAME', 'Secure Calculator [production]'
+  set 'GH_CLIENT_ID', '[Client ID]'
+  set 'GH_CLIENT_SECRET', '[Client Secret]'
+
+  set 'MEMCACHIER_SERVERS', 'Server Name'
+  set 'MEMCACHIER_USERNAME', 'username'
+  set 'MEMCACHIER_PASSWORD', 'password'
 end
 
 config_env do
   set 'SENDGRID_DOMAIN', "[domain setup for Sendgrid service]"
   set 'SENDGRID_USERNAME', "[username setup for Sendgrid service]"
   set 'SENDGRID_PASSWORD', "[password setup for Sendgrid service]"
+
+  set 'UI_PRIVATE_KEY', "..."
+  set 'UI_PUBLIC_KEY', "..."
+  set 'API_PUBLIC_KEY', "..."
 end
