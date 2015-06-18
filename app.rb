@@ -125,7 +125,7 @@ class SecurityCalculator < Sinatra::Base
     gh_user = HTTParty.get(
               'https://api.github.com/user',
               body: {params: {access_token: gh['access_token']}},
-              headers: {'User-Agent' => 'Secure Calculator',
+              headers: {'User-Agent' => ENV['GH_CLIENT_NAME'],
                         'Authorization' => "token #{gh['access_token']}"})
 
     username = gh_user['login']
